@@ -59,6 +59,7 @@ spec:
             done
             {{- else }}
             export CLICKHOUSE_HOST={{ $clickhouseHost }};
+            export CLICKHOUSE_PORT=9000;
             snuba migrations migrate --force;
             {{- end }}
         env:

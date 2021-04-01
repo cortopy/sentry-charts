@@ -149,7 +149,15 @@ sentry:
     sidecars: []
     volumes: []
 
+serviceAccount:
+  create: yes
+  annotations: {}
+  name: ""
+
 snuba:
+  podSecurityContext:
+    privileged: false
+    runAsUser: 999
   api:
     replicas: 1
     env: []

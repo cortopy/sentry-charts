@@ -6,7 +6,7 @@ dependencies:
   repository: https://charts.bitnami.com/bitnami
   version: 12.0.0
 - name: clickhouse
-  repository: https://sentry-kubernetes.github.io/charts
+  repository: file://../clickhouse
   version: 2.0.0
 - name: rabbitmq
   repository: https://charts.bitnami.com/bitnami
@@ -17,5 +17,5 @@ dependencies:
 - name: nginx
   repository: https://charts.bitnami.com/bitnami
   version: 6.0.5
-digest: sha256:1faa1c70f1ed09d8841a6660d510500c609973eddeec213a182fc04eb57767aa
-generated: "2021-03-16T08:40:43.272639+01:00"
+digest: sha256:c918af67b8befc8a50e350ec758ac1d9e9b892c0f20bc8d4a8c94c3ef235ad29
+generated: "2021-04-01T12:50:47.287801714+01:00"

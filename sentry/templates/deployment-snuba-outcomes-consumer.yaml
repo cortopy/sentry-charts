@@ -56,6 +56,7 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.images.snuba.imagePullSecrets | indent 8 }}
       {{- end }}
+      serviceAccountName: {{ include "sentry.serviceAccountName" . }}-snuba
       containers:
       - name: {{ .Chart.Name }}-snuba
         image: "{{ template "snuba.image" . }}"
@@ -64,6 +65,8 @@ spec:
         ports:
         - containerPort: {{ template "snuba.port" }}
         env:
+        - name: CLICKHOUSE_PORT
+          value: {{ include "sentry.clickhouse.port" . | quote }}
         - name: SNUBA_SETTINGS
           value: /etc/snuba/settings.py
 {{- if .Values.snuba.outcomesConsumer.env }}

@@ -301,3 +301,35 @@ Set RabbitMQ host
 {{ .Values.rabbitmq.host }}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Create chart name and version as used by the chart label.
+*/}}
+{{- define "sentry.chart" -}}
+{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Common labels
+*/}}
+{{- define "sentry.commonLabels" -}}
+helm.sh/chart: {{ include "sentry.chart" . }}
+{{- end -}}
+
+
+{{- define "sentry.labels" -}}
+{{ include "sentry.commonLabels" . }}
+{{ include "sentry.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end -}}
+
+{{/*
+Selector labels
+*/}}
+{{- define "sentry.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "sentry.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end -}}
