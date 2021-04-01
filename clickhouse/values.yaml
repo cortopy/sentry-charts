@@ -39,6 +39,14 @@ clickhouse:
   ##
   # rollingUpdatePartition:
 
+  podSecurityContext:
+    privileged: false
+    runAsUser: 0
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+
   ## Prometheus Exporter / Metrics
   ##
   metrics:

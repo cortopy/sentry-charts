@@ -61,6 +61,9 @@ spec:
       - name: {{ . | quote }}
     {{- end }}
     {{- end }}
+    {{- if .Values.clickhouse.serviceAccount.create }}
+      serviceAccountName: {{ include "clickhouse.serviceAccountName" . }}
+    {{- end }}
       initContainers:
       - name: init
         image: {{ .Values.clickhouse.init.image }}:{{ .Values.clickhouse.init.imageVersion }}
@@ -70,6 +73,8 @@ spec:
         - -c
         - |
           mkdir -p /etc/clickhouse-server/metrica.d
+        securityContext:
+          {{- toYaml .Values.clickhouse.podSecurityContext | nindent 10 }}
       containers:
       - name: {{ include "clickhouse.fullname" . }}-replica
         image: {{ .Values.clickhouse.image }}:{{ .Values.clickhouse.imageVersion }}
@@ -117,8 +122,7 @@ spec:
         - name: {{ include "clickhouse.fullname" . }}-users
           mountPath: /etc/clickhouse-server/users.d
         securityContext:
-          privileged: true
-          runAsUser: 0
+          {{- toYaml .Values.clickhouse.podSecurityContext | nindent 10 }}
         {{- if .Values.clickhouse.metrics.enabled }}
       - name: prom-exporter
         image: "{{ .Values.clickhouse.metrics.image.registry }}/{{ .Values.clickhouse.metrics.image.repository }}:{{ .Values.clickhouse.metrics.image.tag }}"

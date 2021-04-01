@@ -54,3 +54,39 @@ if .Values.clickhouse.configmap.logger.path is empty, default value "/var/log/cl
 {{- printf "%s" "/var/log/clickhouse-server" -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Common labels
+*/}}
+{{- define "clickhouse.commonLabels" -}}
+helm.sh/chart: {{ include "clickhouse.chart" . }}
+{{- end -}}
+
+
+{{- define "clickhouse.labels" -}}
+{{ include "clickhouse.commonLabels" . }}
+{{ include "clickhouse.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end -}}
+
+{{/*
+Selector labels
+*/}}
+{{- define "clickhouse.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "clickhouse.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end -}}
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "clickhouse.serviceAccountName" -}}
+{{- if .Values.clickhouse.serviceAccount.create -}}
+    {{ default (include "clickhouse.fullname" .) .Values.clickhouse.serviceAccount.name }}
+{{- else -}}
+    {{ default "default" .Values.clickhouse.serviceAccount.name }}
+{{- end -}}
+{{- end -}}
