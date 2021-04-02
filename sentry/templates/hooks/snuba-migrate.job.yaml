@@ -40,14 +40,15 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.images.snuba.imagePullSecrets | indent 8 }}
       {{- end }}
+      serviceAccountName: {{ include "sentry.serviceAccountName" . }}-snuba
       containers:
       - name: snuba-migrate
         image: "{{ template "snuba.image" . }}"
-        # command: ["./docker_entrypoint.sh", "replacer","--auto-offset-reset=latest","--max-batch-size", "3"]
+        # command: ["./docker_entrypoint.sh", "replacer","--auto-offset-reset=latest","--max-batch-size", "3"]        
         command:
           - /bin/bash
           - -ec
-          - >-
+          - |
             {{- if .Values.clickhouse.enabled }}
             for ((i=0;i<{{ .Values.clickhouse.clickhouse.replicas }};i++)); do
               export CLICKHOUSE_HOST={{ $clickhouseHost }}-$i.{{ $clickhouseHost }}-headless;
@@ -61,6 +62,9 @@ spec:
             export CLICKHOUSE_HOST={{ $clickhouseHost }};
             export CLICKHOUSE_PORT=9000;
             snuba migrations migrate --force;
+
+            # ISTIO
+            x=$(echo $?); curl -fsI -X POST http://localhost:15020/quitquitquit && exit $x
             {{- end }}
         env:
         - name: LOG_LEVEL

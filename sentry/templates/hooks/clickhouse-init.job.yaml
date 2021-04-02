@@ -35,13 +35,14 @@ spec:
         - name: {{ . | quote }}
       {{- end }}
       {{- end }}
+      serviceAccountName: {{ include "sentry.serviceAccountName" . }}-clickhouse-init
       containers:
       - name: clickhouse-init
-        image: "{{ .Values.clickhouse.clickhouse.image }}:{{ .Values.clickhouse.clickhouse.imageVersion }}"
+        image: "{{ .Values.images.clickHouseClient.repository }}:{{ .Values.images.clickHouseClient.tag }}"
         command:
           - /bin/bash
           - -ec
-          - >-
+          - |
             {{- if .Values.clickhouse.enabled }}
             echo "clickhouse-init started"
             
@@ -66,5 +67,8 @@ spec:
             done
             
             echo "clickhouse-init finished"
+
+            # ISTIO
+            x=$(echo $?); curl -fsI -X POST http://localhost:15020/quitquitquit && exit $x
             {{- end }}
 {{- end }}

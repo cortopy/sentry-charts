@@ -49,6 +49,7 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.images.symbolicator.imagePullSecrets | indent 8 }}
       {{- end }}
+      serviceAccountName: {{ include "sentry.serviceAccountName" . }}
       containers:
       - name: {{ .Chart.Name }}-symbolicator
         image: "{{ template "symbolicator.image" . }}"

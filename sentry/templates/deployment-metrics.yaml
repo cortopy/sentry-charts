@@ -45,6 +45,7 @@ spec:
       {{- if .Values.metrics.schedulerName }}
       schedulerName: "{{ .Values.metrics.schedulerName }}"
       {{- end }}
+      serviceAccountName: {{ include "sentry.serviceAccountName" . }}-metrics
       containers:
       - name: {{ .Chart.Name }}-metrics
         args:

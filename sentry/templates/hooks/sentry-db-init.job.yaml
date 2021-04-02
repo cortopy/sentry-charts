@@ -38,11 +38,20 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
       {{- end }}
+      serviceAccountName: {{ include "sentry.serviceAccountName" . }}
       containers:
       - name: db-init-job
         image: "{{ template "sentry.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
-        command: ["sentry","upgrade","--noinput"]
+        # command: ["sentry","upgrade","--noinput"]
+        command:
+          - /bin/bash
+          - -ec
+          - |
+            sentry upgrade --noinput
+
+            # ISTIO
+            x=$(echo $?); curl -fsI -X POST http://localhost:15020/quitquitquit && exit $x
         env:
         {{- if .Values.postgresql.enabled }}
         - name: POSTGRES_PASSWORD

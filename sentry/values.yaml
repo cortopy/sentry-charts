@@ -32,6 +32,9 @@ images:
     tag: 0.3.3
     # pullPolicy: IfNotPresent
     imagePullSecrets: []
+  clickHouseClient:
+    repository: j3asolutions/clickhouse-server
+    tag: 20.8.15.11
 
 relay:
   replicas: 1

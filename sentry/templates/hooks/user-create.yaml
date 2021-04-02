@@ -36,6 +36,7 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
       {{- end }}
+      serviceAccountName: {{ include "sentry.serviceAccountName" . }}
       containers:
       - name: user-create-job
         image: "{{ template "sentry.image" . }}"
@@ -44,17 +45,15 @@ spec:
         # Create user but do not exit 1 when user already exists (exit code 3 from createuser command)
         # https://docs.sentry.io/server/cli/createuser/
         args:
-          - >
+          - |
             sentry createuser \
               --no-input \
               --superuser \
               --email "{{ .Values.user.email }}" \
               --password "{{ .Values.user.password }}" || true; \
-            if [ $? -eq 0 ] || [ $? -eq 3 ]; then \
-              exit 0; \
-            else \
-              exit 1; \
-            fi
+            
+            # ISTIO
+            x=$(echo $?); curl -fsI -X POST http://localhost:15020/quitquitquit && exit $x
         env:
         {{- if .Values.postgresql.enabled }}
         - name: POSTGRES_PASSWORD

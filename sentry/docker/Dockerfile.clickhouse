@@ -1,0 +1,6 @@
+FROM yandex/clickhouse-server:20.8.15.11
+
+RUN apt-get update \
+    && apt-get install -y curl \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*

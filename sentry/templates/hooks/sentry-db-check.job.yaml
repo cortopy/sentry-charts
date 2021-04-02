@@ -41,9 +41,10 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
       {{- end }}
+      serviceAccountName: {{ include "sentry.serviceAccountName" . }}-db-check
       containers:
       - name: db-check
-        image: subfuzion/netcat:latest
+        image: curlimages/curl:7.76.0
         command:
           - /bin/sh
           - -c
@@ -95,6 +96,10 @@ spec:
               fi
             done
             echo "Kafka is up"
+            
+            # ISTIO
+            
+            x=$(echo $?); curl -fsI -X POST http://localhost:15020/quitquitquit && exit $x
             {{- end }}
         env:
 {{- if .Values.hooks.dbCheck.env }}

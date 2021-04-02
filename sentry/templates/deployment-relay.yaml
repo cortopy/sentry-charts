@@ -58,6 +58,7 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.images.relay.imagePullSecrets | indent 8 }}
       {{- end }}
+      serviceAccountName: {{ include "sentry.serviceAccountName" . }}-relay
       initContainers:
         - name: {{ .Chart.Name }}-relay-init
           image: "{{ template "relay.image" . }}"
@@ -81,7 +82,7 @@ spec:
       - name: {{ .Chart.Name }}-relay
         image: "{{ template "relay.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
-        # # NOTE: added to override entrypoint's use of gosu
+        # NOTE: added to override entrypoint's use of gosu
         command: ["/bin/relay"]
         args: ["run"]
         ports:
