@@ -286,6 +286,10 @@ mail:
 
 symbolicator:
   enabled: false
+  podSecurityContext:
+    runAsUser: 10021
+    runAsGroup: 10021
+    fsGroup: 10021
   api:
     replicas: 1
     env: []
