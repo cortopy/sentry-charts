@@ -44,15 +44,23 @@ spec:
           imagePullSecrets:
 {{ toYaml .Values.images.sentry.imagePullSecrets | indent 12 }}
             {{- end }}
+          serviceAccountName: {{ include "sentry.serviceAccountName" . }}
           containers:
           - name: {{ .Chart.Name }}-sentry-cleanup
             image: "{{ template "sentry.image" . }}"
             imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
-            command: ["sentry"]
+            # command: ["sentry"]
+            # args:
+            #   - "cleanup"
+            #   - "--days"
+            #   - "{{ .Values.sentry.cleanup.days }}"
+            command: ["/bin/bash", "-c"]
             args:
-              - "cleanup"
-              - "--days"
-              - "{{ .Values.sentry.cleanup.days }}"
+              - |
+                sentry cleanup --days {{ .Values.sentry.cleanup.days }}
+                
+                # ISTIO
+                x=$(echo $?); curl -fsI -X POST http://localhost:15020/quitquitquit && exit $x
             env:
             - name: SNUBA
               value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" }}
