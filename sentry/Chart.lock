@@ -1,12 +1,12 @@
 dependencies:
 - name: redis
   repository: https://charts.bitnami.com/bitnami
-  version: 9.3.2
+  version: 12.10.0
 - name: kafka
   repository: https://charts.bitnami.com/bitnami
-  version: 12.0.0
+  version: 12.16.0
 - name: clickhouse
-  repository: file://../clickhouse
+  repository: https://sentry-kubernetes.github.io/charts
   version: 2.0.0
 - name: rabbitmq
   repository: https://charts.bitnami.com/bitnami
@@ -17,5 +17,5 @@ dependencies:
 - name: nginx
   repository: https://charts.bitnami.com/bitnami
   version: 6.0.5
-digest: sha256:c918af67b8befc8a50e350ec758ac1d9e9b892c0f20bc8d4a8c94c3ef235ad29
-generated: "2021-04-01T12:50:47.287801714+01:00"
+digest: sha256:7cbda2e2fda9ea62d23f9bbfe93e23050f1859aa75148490c32ef9c902962143
+generated: "2021-04-03T12:39:58.199790903+01:00"
