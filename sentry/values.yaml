@@ -57,6 +57,9 @@ relay:
   sidecars: [ ]
   volumes: [ ]
 
+  service:
+    port: 80
+
 sentry:
   singleOrganization: true
   web:

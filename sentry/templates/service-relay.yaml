@@ -14,7 +14,7 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-  - port: {{ template "relay.port" . }}
+  - port: {{ .Values.relay.service.port }}
     targetPort: {{ template "relay.port" }}
     protocol: TCP
     name: {{ .Values.service.name }}-relay
