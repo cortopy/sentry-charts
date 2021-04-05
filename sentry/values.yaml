@@ -38,7 +38,8 @@ images:
 
 relay:
   replicas: 1
-  mode: proxy
+  # https://github.com/sentry-kubernetes/charts/issues/224
+  mode: managed
   env: []
   probeInitialDelaySeconds: 10
   resources: {}
@@ -46,6 +47,7 @@ relay:
   nodeSelector: {}
   # tolerations: []
   # podLabels: []
+  logLevel: info
 
   autoscaling:
     enabled: false
@@ -278,6 +280,7 @@ system:
 mail:
   backend: dummy # smtp
   useTls: false
+  useSsl: false
   username: ""
   password: ""
   port: 25

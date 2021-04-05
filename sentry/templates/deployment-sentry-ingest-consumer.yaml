@@ -59,7 +59,7 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "sentry.serviceAccountName" . }}
+      serviceAccountName: {{ include "sentry.serviceAccountName" . }}-ingest
       containers:
       - name: {{ .Chart.Name }}-ingest-consumer
         image: "{{ template "sentry.image" . }}"

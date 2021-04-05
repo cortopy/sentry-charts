@@ -50,7 +50,7 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "sentry.serviceAccountName" . }}
+      serviceAccountName: {{ include "sentry.serviceAccountName" . }}-worker
       containers:
       - name: {{ .Chart.Name }}-worker
         image: "{{ template "sentry.image" . }}"
