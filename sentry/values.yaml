@@ -235,15 +235,33 @@ snuba:
   migrateJob:
     env: []
 
+  cleanupErrors:
+    enabled: true
+    schedule: "0 * * * *"
+    sidecars: []
+    volumes: []
+
+  cleanupTransactions:
+    enabled: true
+    schedule: "0 * * * *"
+    sidecars: []
+    volumes: []
 
 hooks:
   enabled: true
   removeOnSuccess: true
   clickhouseInit:
-    podAnnotations:
+    podAnnotations: {}
   dbCheck:
+    image:
+      # repository: subfuzion/netcat
+      # tag: latest
+      # pullPolicy: IfNotPresent
+      repository: curlimages/curl
+      tag: 7.76.0
+      imagePullSecrets: []
     env: []
-    podAnnotations: []
+    podAnnotations: {}
     resources:
       limits:
         memory: 64Mi
@@ -252,7 +270,7 @@ hooks:
         memory: 64Mi
   dbInit:
     env: []
-    podAnnotations: []
+    podAnnotations: {}
     resources:
       limits:
         memory: 2048Mi
@@ -262,7 +280,7 @@ hooks:
     sidecars: [ ]
     volumes: [ ]
   snubaInit:
-    podAnnotations: []
+    podAnnotations: {}
     resources:
       limits:
         cpu: 2000m
@@ -471,6 +489,18 @@ clickhouse:
         replica:
           backup:
             enabled: false
+      users:
+        enabled: false
+        user:
+        # the first user will be used if enabled
+        - name: default
+          config:
+            password: ""
+            networks:
+            - ::/0
+            profile: default
+            quota: default
+
     persistentVolumeClaim:
       enabled: true
       dataPersistentVolume:
@@ -486,6 +516,9 @@ externalClickhouse:
   ##
   host: "clickhouse"
   tcpPort: 9000
+  username: default
+  password: ""
+  database: default
   ## Cluster name, can be found in config
   ## (https://clickhouse.tech/docs/en/operations/server-configuration-parameters/settings/#server-settings-remote-servers)
   ## or by executing `select * from system.clusters`
