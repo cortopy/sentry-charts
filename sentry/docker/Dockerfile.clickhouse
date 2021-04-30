@@ -1,4 +1,5 @@
-FROM yandex/clickhouse-server:20.8.15.11
+ARG CLICKHOUSE_TAG
+FROM yandex/clickhouse-server:${CLICKHOUSE_TAG}
 
 RUN apt-get update \
     && apt-get install -y curl \

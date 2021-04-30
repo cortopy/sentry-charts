@@ -1,4 +1,5 @@
-FROM getsentry/sentry:21.3.0
+ARG SENTRY_TAG
+FROM getsentry/sentry:${SENTRY_TAG}
 
 RUN apt-get update \
     && apt-get install -y curl \

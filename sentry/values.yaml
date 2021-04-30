@@ -13,12 +13,12 @@ asHook: true
 
 images:
   sentry:
-    # repository: getsentry/sentry
+    repository: j3asolutions/sentry
     # tag: Chart.AppVersion
     # pullPolicy: IfNotPresent
     imagePullSecrets: []
   snuba:
-    # repository: getsentry/snuba
+    repository: j3asolutions/snuba
     # tag: Chart.AppVersion
     # pullPolicy: IfNotPresent
     imagePullSecrets: []
