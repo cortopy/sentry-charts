@@ -43,6 +43,7 @@ spec:
           imagePullSecrets:
 {{ toYaml .Values.images.snuba.imagePullSecrets | indent 12 }}
             {{- end }}
+          serviceAccountName: {{ include "sentry.serviceAccountName" . }}-snuba
           containers:
           - name: {{ .Chart.Name }}-snuba-cleanup-errors
             image: "{{ template "snuba.image" . }}"
@@ -54,12 +55,16 @@ spec:
                 snuba cleanup \
                   --storage transactions \
                   --dry-run False \
-                  --clickhouse-host {{ include "sentry.clickhouse.host" . | quote }}
+                  --clickhouse-host {{ include "sentry.clickhouse.host" . | quote }} \
                   --clickhouse-port {{ include "sentry.clickhouse.port" . | quote }}
 
                 # ISTIO
                 x=$(echo $?); curl -fsI -X POST http://localhost:15020/quitquitquit && exit $x
             env:
+              # even though this setting is deprecated https://github.com/getsentry/snuba/pull/953
+              # it seems it's still needed, as otherwise https://github.com/getsentry/snuba/blob/6a6977fdbab591fe5d3f9dc8941c74cdeee35927/snuba/settings/__init__.py#L24 errors
+              - name: CLICKHOUSE_PORT
+                value: {{ include "sentry.clickhouse.port" . | quote }}
               - name: SNUBA_SETTINGS
                 value: /etc/snuba/settings.py
 {{- if .Values.snuba.cleanupTransactions.env }}
