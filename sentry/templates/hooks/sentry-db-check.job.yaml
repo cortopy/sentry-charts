@@ -36,6 +36,18 @@ spec:
 {{ toYaml .Values.sentry.worker.podLabels | indent 8 }}
         {{- end }}
     spec:
+      {{- if .Values.hooks.dbCheck.affinity }}
+      affinity:
+{{ toYaml .Values.hooks.dbCheck.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.hooks.dbCheck.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.hooks.dbCheck.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.hooks.dbCheck.tolerations }}
+      tolerations:
+{{ toYaml .Values.hooks.dbCheck.tolerations | indent 8 }}
+      {{- end }}
       restartPolicy: Never
       {{- if .Values.hooks.dbCheck.image.imagePullSecrets }}
       imagePullSecrets:
@@ -45,23 +57,28 @@ spec:
       containers:
       - name: db-check
         image: curlimages/curl:7.76.0
+        # image: {{ template "dbCheck.image" . }}
         imagePullPolicy: {{ default "IfNotPresent" .Values.hooks.dbCheck.image.pullPolicy }}
         command:
           - /bin/sh
           - -c
           - |
-            {{- if .Values.clickhouse.enabled }}
             echo "Checking if clickhouse is up"
             CLICKHOUSE_STATUS=0
             while [ $CLICKHOUSE_STATUS -eq 0 ]; do
               CLICKHOUSE_STATUS=1
-              i=0; while [ $i -lt {{ .Values.clickhouse.clickhouse.replicas }} ]; do
+              CLICKHOUSE_REPLICAS={{ .Values.clickhouse.clickhouse.configmap.remote_servers.enabled | ternary .Values.clickhouse.clickhouse.replicas "1" }}
+              i=0; while [ $i -lt $CLICKHOUSE_REPLICAS ]; do
+                {{- if .Values.clickhouse.clickhouse.configmap.remote_servers.enabled }}
                 CLICKHOUSE_HOST={{ $clickhouseHost }}-$i.{{ $clickhouseHost }}-headless
+                {{- else }}
+                CLICKHOUSE_HOST={{ .Values.externalClickhouse.host }}
+                {{- end }}
                 if ! nc -z "$CLICKHOUSE_HOST" {{ $clickhousePort }}; then
                   CLICKHOUSE_STATUS=0
                   echo "$CLICKHOUSE_HOST is not available yet"
                 fi
-                {{- if .Values.clickhouse.clickhouse.configmap.remote_servers.replica.backup.enabled }}
+                {{- if and .Values.clickhouse.clickhouse.configmap.remote_servers.enabled .Values.clickhouse.clickhouse.configmap.remote_servers.replica.backup.enabled }}
                 CLICKHOUSE_HOST={{ $clickhouseHost }}-replica-$i.{{ $clickhouseHost }}-replica-headless
                 if ! nc -z "$CLICKHOUSE_HOST" {{ $clickhousePort }}; then
                   CLICKHOUSE_STATUS=0
@@ -76,7 +93,6 @@ spec:
               fi
             done
             echo "Clickhouse is up"
-            {{- end }}
 
             {{- if .Values.kafka.enabled }}
             echo "Checking if kafka is up"
@@ -97,11 +113,9 @@ spec:
               fi
             done
             echo "Kafka is up"
-            
-            # ISTIO
-            
-            x=$(echo $?); curl -fsI -X POST http://localhost:15020/quitquitquit && exit $x
             {{- end }}
+
+            x=$(echo $?); curl -fsI -X POST http://localhost:15020/quitquitquit && exit $x
         env:
 {{- if .Values.hooks.dbCheck.env }}
 {{ toYaml .Values.hooks.dbCheck.env | indent 8 }}

@@ -34,17 +34,17 @@ images:
     imagePullSecrets: []
   clickHouseClient:
     repository: j3asolutions/clickhouse-server
-    tag: 20.8.15.11
+    tag: 20.3.9.70
 
 relay:
   replicas: 1
-  # https://github.com/sentry-kubernetes/charts/issues/224
   mode: managed
   env: []
   probeInitialDelaySeconds: 10
   resources: {}
   affinity: {}
   nodeSelector: {}
+  securityContext: {}
   # tolerations: []
   # podLabels: []
   logLevel: info
@@ -54,8 +54,8 @@ relay:
     minReplicas: 2
     maxReplicas: 5
     targetCPUUtilizationPercentage: 50
-  sidecars: [ ]
-  volumes: [ ]
+  sidecars: []
+  volumes: []
 
   service:
     port: 80
@@ -71,6 +71,7 @@ sentry:
     resources: {}
     affinity: {}
     nodeSelector: {}
+    securityContext: {}
     # tolerations: []
     # podLabels: []
     # Mount and use custom CA
@@ -83,8 +84,8 @@ sentry:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
 
   features:
     orgSubdomains: false
@@ -107,8 +108,8 @@ sentry:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
 
   ingestConsumer:
     replicas: 1
@@ -117,6 +118,7 @@ sentry:
     resources: {}
     affinity: {}
     nodeSelector: {}
+    securityContext: {}
     # tolerations: []
     # podLabels: []
 
@@ -127,8 +129,8 @@ sentry:
       minReplicas: 1
       maxReplicas: 3
       targetCPUUtilizationPercentage: 50
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
   cron:
     replicas: 1
     env: []
@@ -137,19 +139,20 @@ sentry:
     nodeSelector: {}
     # tolerations: []
     # podLabels: []
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
   postProcessForward:
     replicas: 1
     env: []
     resources: {}
     affinity: {}
     nodeSelector: {}
+    securityContext: {}
     # tolerations: []
     # podLabels: []
     # commitBatchSize: 1
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
   cleanup:
     enabled: true
     schedule: "0 0 * * *"
@@ -173,6 +176,7 @@ snuba:
     resources: {}
     affinity: {}
     nodeSelector: {}
+    securityContext: {}
     # tolerations: []
     # podLabels: []
 
@@ -181,8 +185,8 @@ snuba:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
 
   consumer:
     replicas: 1
@@ -190,6 +194,7 @@ snuba:
     resources: {}
     affinity: {}
     nodeSelector: {}
+    securityContext: {}
     # tolerations: []
     # podLabels: []
 
@@ -199,6 +204,7 @@ snuba:
     resources: {}
     affinity: {}
     nodeSelector: {}
+    securityContext: {}
     # tolerations: []
     # podLabels: []
 
@@ -208,6 +214,7 @@ snuba:
     resources: {}
     affinity: {}
     nodeSelector: {}
+    securityContext: {}
     # tolerations: []
     # podLabels: []
 
@@ -217,6 +224,7 @@ snuba:
     resources: {}
     affinity: {}
     nodeSelector: {}
+    securityContext: {}
     # tolerations: []
     # podLabels: []
 
@@ -226,6 +234,7 @@ snuba:
     resources: {}
     affinity: {}
     nodeSelector: {}
+    securityContext: {}
     # tolerations: []
     # podLabels: []
 
@@ -252,6 +261,9 @@ hooks:
   removeOnSuccess: true
   clickhouseInit:
     podAnnotations: {}
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
   dbCheck:
     image:
       # repository: subfuzion/netcat
@@ -268,6 +280,9 @@ hooks:
       requests:
         cpu: 100m
         memory: 64Mi
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
   dbInit:
     env: []
     podAnnotations: {}
@@ -277,8 +292,11 @@ hooks:
       requests:
         cpu: 300m
         memory: 2048Mi
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
   snubaInit:
     podAnnotations: {}
     resources:
@@ -288,6 +306,9 @@ hooks:
       requests:
         cpu: 700m
         memory: 1Gi
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
 
 system:
   ## be sure to include the scheme on the url, for example: "https://sentry.example.com"
@@ -310,10 +331,6 @@ mail:
 
 symbolicator:
   enabled: false
-  podSecurityContext:
-    runAsUser: 10021
-    runAsGroup: 10021
-    fsGroup: 10021
   api:
     replicas: 1
     env: []
@@ -321,6 +338,10 @@ symbolicator:
     resources: {}
     affinity: {}
     nodeSelector: {}
+    podSecurityContext:
+      runAsUser: 10021
+      runAsGroup: 10021
+      fsGroup: 10021
     # tolerations: []
     # podLabels: []
     # priorityClassName: "xxx"
@@ -408,6 +429,9 @@ ingress:
   # If you are using traefik ingress controller, switch this to 'traefik'
   # if you are using AWS ALB Ingress controller, switch this to 'aws-alb'
   regexPathStyle: nginx
+  #If you are using AWS ALB Ingress controller, switch to true if you want activate the http to https redirection.
+  alb:
+    httpRedirect: false
   # annotations:
   #   If you are using nginx ingress controller, please use at least those 2 annotations
   #   kubernetes.io/ingress.class: nginx
@@ -452,7 +476,8 @@ filestore:
       ## different nodes.
       persistentWorkers: false
 
-  gcs: {}
+  gcs:
+    {}
     ## Point this at a pre-configured secret containing a service account. The resulting
     ## secret will be mounted at /var/run/secrets/google
     # secretName:
@@ -492,21 +517,21 @@ clickhouse:
       users:
         enabled: false
         user:
-        # the first user will be used if enabled
-        - name: default
-          config:
-            password: ""
-            networks:
-            - ::/0
-            profile: default
-            quota: default
+          # the first user will be used if enabled
+          - name: default
+            config:
+              password: ""
+              networks:
+                - ::/0
+              profile: default
+              quota: default
 
     persistentVolumeClaim:
       enabled: true
       dataPersistentVolume:
         enabled: true
         accessModes:
-        - "ReadWriteOnce"
+          - "ReadWriteOnce"
         storage: "30Gi"
 
 ## This value is only used when clickhouse.enabled is set to false
@@ -516,6 +541,7 @@ externalClickhouse:
   ##
   host: "clickhouse"
   tcpPort: 9000
+  httpPort: 8123
   username: default
   password: ""
   database: default
@@ -615,7 +641,8 @@ rabbitmq:
   persistence:
     enabled: true
   resources: {}
-  memoryHighWatermark: {}
+  memoryHighWatermark:
+    {}
     # enabled: true
     # type: relative
     # value: 0.4
@@ -662,7 +689,6 @@ rabbitmq:
   extraConfiguration: |
     load_definitions = /app/load_definition.json
 
-
 ## Prometheus Exporter / Metrics
 ##
 metrics:
@@ -698,6 +724,7 @@ metrics:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  securityContext: {}
   # schedulerName:
   # Optional extra labels for pod, i.e. redis-client: "true"
   # podLabels: []

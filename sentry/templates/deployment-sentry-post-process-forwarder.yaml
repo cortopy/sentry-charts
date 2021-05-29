@@ -30,6 +30,9 @@ spec:
         checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
         checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
         checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
+        {{- if .Values.sentry.postProcessForward.annotations }}
+{{ toYaml .Values.sentry.postProcessForward.annotations | indent 8 }}
+        {{- end }}
       labels:
         app: sentry
         release: "{{ .Release.Name }}"
@@ -55,6 +58,10 @@ spec:
 {{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
       {{- end }}
       serviceAccountName: {{ include "sentry.serviceAccountName" . }}-ingest
+      {{- if .Values.sentry.postProcessForward.securityContext }}
+      securityContext:
+{{ toYaml .Values.sentry.postProcessForward.securityContext | indent 8 }}
+      {{- end }}
       containers:
       - name: {{ .Chart.Name }}-post-process-forward
         image: "{{ template "sentry.image" . }}"

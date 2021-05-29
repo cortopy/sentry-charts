@@ -49,6 +49,10 @@ spec:
 {{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
       {{- end }}
       serviceAccountName: {{ include "sentry.serviceAccountName" . }}
+      {{- if .Values.sentry.cron.securityContext }}
+      securityContext:
+{{ toYaml .Values.sentry.cron.securityContext | indent 8 }}
+      {{- end }}
       containers:
       - name: {{ .Chart.Name }}-cron
         image: "{{ template "sentry.image" . }}"

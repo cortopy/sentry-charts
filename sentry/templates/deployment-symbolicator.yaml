@@ -50,8 +50,10 @@ spec:
 {{ toYaml .Values.images.symbolicator.imagePullSecrets | indent 8 }}
       {{- end }}
       serviceAccountName: {{ include "sentry.serviceAccountName" . }}
+      {{- if .Values.symbolicator.api.securityContext }}
       securityContext:
-          {{- toYaml .Values.symbolicator.podSecurityContext | nindent 10 }}
+{{ toYaml .Values.symbolicator.api.securityContext | indent 8 }}
+      {{- end }}
       containers:
       - name: {{ .Chart.Name }}-symbolicator
         image: "{{ template "symbolicator.image" . }}"

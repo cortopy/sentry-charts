@@ -46,6 +46,10 @@ spec:
       schedulerName: "{{ .Values.metrics.schedulerName }}"
       {{- end }}
       serviceAccountName: {{ include "sentry.serviceAccountName" . }}-metrics
+      {{- if .Values.metrics.securityContext }}
+      securityContext:
+{{ toYaml .Values.metrics.securityContext | indent 8 }}
+      {{- end }}
       containers:
       - name: {{ .Chart.Name }}-metrics
         args:
