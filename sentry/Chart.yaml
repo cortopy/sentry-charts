@@ -14,7 +14,7 @@ dependencies:
     version: 12.18.3
     condition: kafka.enabled
   - name: clickhouse
-    repository: https://sentry-kubernetes.github.io/charts
+    repository: file://../clickhouse
     version: 3.0.0
     condition: clickhouse.enabled
   - name: rabbitmq
