@@ -76,8 +76,8 @@ spec:
             snuba bootstrap --force;
             {{- end }}
 
-            # ISTIO
-            x=$(echo $?); curl -fsI -X POST http://localhost:15020/quitquitquit && exit $x
+            # LINKERD
+            x=$(echo $?); curl -fsI -X POST http://localhost:4191/shutdown && exit $x
         env:
         - name: LOG_LEVEL
           value: debug

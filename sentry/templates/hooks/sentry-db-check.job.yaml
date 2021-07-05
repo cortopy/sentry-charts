@@ -115,7 +115,7 @@ spec:
             echo "Kafka is up"
             {{- end }}
 
-            x=$(echo $?); curl -fsI -X POST http://localhost:15020/quitquitquit && exit $x
+            x=$(echo $?); curl -fsI -X POST http://localhost:4191/shutdown && exit $x
         env:
 {{- if .Values.hooks.dbCheck.env }}
 {{ toYaml .Values.hooks.dbCheck.env | indent 8 }}

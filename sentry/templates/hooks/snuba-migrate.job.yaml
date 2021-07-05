@@ -76,7 +76,7 @@ spec:
             snuba migrations migrate --force;
             {{- end }}
 
-            x=$(echo $?); curl -fsI -X POST http://localhost:15020/quitquitquit && exit $x
+            x=$(echo $?); curl -fsI -X POST http://localhost:4191/shutdown && exit $x
         env:
         - name: LOG_LEVEL
           value: debug

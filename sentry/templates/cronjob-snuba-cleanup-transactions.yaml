@@ -58,8 +58,8 @@ spec:
                   --clickhouse-host {{ include "sentry.clickhouse.host" . | quote }} \
                   --clickhouse-port {{ include "sentry.clickhouse.port" . | quote }}
 
-                # ISTIO
-                x=$(echo $?); curl -fsI -X POST http://localhost:15020/quitquitquit && exit $x
+                # LINKERD
+                x=$(echo $?); curl -fsI -X POST http://localhost:4191/shutdown && exit $x
             env:
               # even though this setting is deprecated https://github.com/getsentry/snuba/pull/953
               # it seems it's still needed, as otherwise https://github.com/getsentry/snuba/blob/6a6977fdbab591fe5d3f9dc8941c74cdeee35927/snuba/settings/__init__.py#L24 errors
